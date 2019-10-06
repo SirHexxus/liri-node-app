@@ -27,24 +27,33 @@ const command = () => {
 }
 
 //  //  Parse arguments after command into a single string
-let getArgs = () => {
-    return input.slice(3).join(" ");
+let getArgs = (which) => {
+    switch(which) {
+        case 'bit':
+            return input.slice(3).join('').toLowerCase();
+        case 'spot':
+            return input.slice(3).join('+').toLowerCase();
+        case 'omdb':
+            return input.slice(3).join('').toLowerCase();
+        case 'txt':
+            return input.slice(3).join(' ').toLowerCase();
+    }
 }
 
 //  //  Make an API call based on getArgs() value that returns concert information
 //  //  Useage looks like: `node liri.js concert-this <artist/band name here>`
-const concertThis = (arg) => {
-    let artist = getArgs(arg);    // I can't figure out how to get data for artists that have more than one word in their names...
+const concertThis = () => {
+    let artist = getArgs('bit');
     // console.log(artist);       //  Used for Debugging
     let queryUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
-    console.log(queryUrl);
+    // console.log(queryUrl);  //  Used for Debugging
 
     //  //  This will search the Bands in Town Artist Events API for an artist and render the
     //  //  following information about each event to the terminal:
     Axios.get(queryUrl).then(function(response) {
         // Name of the venue/Venue location/Date of the Event
         // console.log(response.data[0]);   //  Used for Debugging
-        for(let i = 0; i < response.data.length; i++) {
+        for(let i = 0; i < 5; i++) {
             let temp = response.data[i];
             console.log(i + 1);
             console.log("Venue Name:\t" + temp.venue.name + "\nLocation:\t" + temp.venue.city + ", " + temp.venue.region + "\nWhen:\t\t" + temp.datetime);
@@ -69,8 +78,9 @@ const concertThis = (arg) => {
 //  //  Make an API call based on getArgs() value that returns song information
 //  //  Useage looks like: `node liri.js spotify-this-song <song name here>`
 const spotifyThisSong = (arg) => {
-    let song = getArgs();
-    // let queryUrl = 
+    let song = getArgs('spot');
+    console.log("This Feature Is Still In Development. Check Back Later!")
+    // let queryUrl = 'https://api.spotify.com/v1/search' + song + '&type=track&limit=1'
     // This will show the following information about the song in your terminal/bash window
         // Artist(s)
         // The song's name
@@ -85,9 +95,8 @@ const spotifyThisSong = (arg) => {
         // Step Four: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the [node-spotify-api package](https://www.npmjs.com/package/node-spotify-api).
 }
 
-const movieThis = (arg) => {
-    // movie-this
-// node liri.js movie-this '<movie name here>'
+const movieThis = (arg) => {    // node liri.js movie-this '<movie name here>'
+    let title = getArgs('omdb');
     // This will output the following information to your terminal/bash window:
         // Title of the movie.
         // Year the movie came out.
@@ -103,21 +112,29 @@ const movieThis = (arg) => {
     // You'll use the `axios` package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You may use `trilogy`.
 }
 
-const runText = (arg) => {
-// do-what-it-says
-// node liri.js do-what-it-says`
+const runText = () => {     // node liri.js do-what-it-says`
+    let text = getArgs('txt');
     // Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
         // It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
         // Edit the text in random.txt to test out the feature for movie-this and concert-this.
 }
 
-switch (command()) {
-// Make it so liri.js can take in one of the following commands:
-    // concert-this
-    case 'concert-this':
-        concertThis(getArgs());
-        break;
-    case 'spotify-this-song':
-        spotifyThisSong(getArgs());
-        break;
+const main = (data) {
+    switch (data) {
+    // Make it so liri.js can take in one of the following commands:
+        // concert-this
+        case 'concert-this':
+            concertThis();
+            break;
+        case 'spotify-this-song':
+            spotifyThisSong();
+            break;
+        case 'movie-this':
+            movieThis();
+            break;
+        case 'do-what-it-says':
+            runText()
     }
+}
+
+main(command());
